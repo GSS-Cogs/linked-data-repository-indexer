@@ -1,3 +1,4 @@
+import sys
 
 def indexer():
     while True:
@@ -10,4 +11,5 @@ def indexer():
 
 
 if __name__ == '__main__':
-    indexer()
+    if 'start' in sys.argv:
+        indexer()
