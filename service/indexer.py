@@ -1,4 +1,5 @@
 import sys
+import asyncio
 
 
 class index_worker():
@@ -35,10 +36,11 @@ class index_worker():
         return self.queue.drain()
 
 
-def indexer(worker):
+async def indexer(worker, sleep_time):
     while True:
         # TO DO: take items of queue to chosen queue
         try:
+            await asyncio.sleep(sleep_time)
             worker.get_item()
         except Exception as err:
             # replace with logging system
@@ -48,4 +50,4 @@ def indexer(worker):
 if __name__ == '__main__':
     worker = index_worker()
     if 'start' in sys.argv:
-        indexer(worker)
+        asyncio.run(indexer(worker, sleep_time))
