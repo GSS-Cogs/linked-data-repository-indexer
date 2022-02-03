@@ -48,6 +48,8 @@ async def indexer(worker, sleep_time):
 
 
 if __name__ == '__main__':
-    worker = index_worker()
+    queue_detail = ''
+    sleep_time = 100
+    worker = index_worker(queue_detail)
     if 'start' in sys.argv:
         asyncio.run(indexer(worker, sleep_time))
