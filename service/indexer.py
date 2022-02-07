@@ -35,32 +35,36 @@ class index_worker():
 
         return self.queue.drain()
 
+
 loop = asyncio.get_event_loop()
+
+
 async def indexer_engine(worker, sleep_time):
     # TO DO: take items of queue to chosen queue
     while True:
         try:
             await asyncio.sleep(sleep_time)
             tasks = asyncio.ensure_future(worker)
-            loop.run_until_complete(tasks) # wait until tasks are done
+            loop.run_until_complete(tasks)  # wait until tasks are done
         except Exception as err:
             # replace with logging system
             print('following error when taking off queue: %s' % (err))
         loop.close()
 
+
 async def main():
-    queue = asyncio.Queue() # replace with production queue
+    queue = asyncio.Queue()  # replace with production queue
     sleep_time = 10
     worker = index_worker(queue)
+
     # producers = [asyncio.create_task(producer(queue))
-    #              for _ in range(3)]
-    import pdb; pdb.set_trace()
+    #              for _ in range(3)] # example of producers on queue
     consumers = [asyncio.create_task(indexer_engine(worker, sleep_time))
                  for _ in range(10)]
 
     # with both producers and consumers running, wait for
     # the producers to finish
-    await asyncio.gather(*producers)
+    # await asyncio.gather(*producers)
     print('---- done producing')
 
     # wait for the remaining tasks to be processed
