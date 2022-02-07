@@ -41,7 +41,9 @@ async def indexer(worker, sleep_time):
         # TO DO: take items of queue to chosen queue
         try:
             await asyncio.sleep(sleep_time)
-            worker.get_item()
+            loop = asyncio.get_event_loop()
+            tasks = asyncio.gather(worker.put_item('test'))
+            loop.run_until_complete(tasks)
         except Exception as err:
             # replace with logging system
             print('following error when taking off queue: %s' % (err))
@@ -53,3 +55,6 @@ if __name__ == '__main__':
     worker = index_worker(queue_detail)
     if 'start' in sys.argv:
         asyncio.run(indexer(worker, sleep_time))
+    if 'stop' in sys.argv:
+        loop = asyncio.get_event_loop()
+        loop.close()
