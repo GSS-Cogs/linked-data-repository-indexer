@@ -22,7 +22,7 @@ class index_worker():
         """
         return self.queue.get()
 
-    def fetch_index(self, index):
+    def fetch_index(self, index: int):
         """
         Fetch index of queue
         """
@@ -35,26 +35,48 @@ class index_worker():
 
         return self.queue.drain()
 
-
-async def indexer(worker, sleep_time):
+loop = asyncio.get_event_loop()
+async def indexer_engine(worker, sleep_time):
+    # TO DO: take items of queue to chosen queue
     while True:
-        # TO DO: take items of queue to chosen queue
         try:
             await asyncio.sleep(sleep_time)
-            loop = asyncio.get_event_loop()
-            tasks = asyncio.gather(worker.put_item('test'))
-            loop.run_until_complete(tasks)
+            tasks = asyncio.ensure_future(worker)
+            loop.run_until_complete(tasks) # wait until tasks are done
         except Exception as err:
             # replace with logging system
             print('following error when taking off queue: %s' % (err))
+        loop.close()
+
+async def main():
+    queue = asyncio.Queue() # replace with production queue
+    sleep_time = 10
+    worker = index_worker(queue)
+    # producers = [asyncio.create_task(producer(queue))
+    #              for _ in range(3)]
+    import pdb; pdb.set_trace()
+    consumers = [asyncio.create_task(indexer_engine(worker, sleep_time))
+                 for _ in range(10)]
+
+    # with both producers and consumers running, wait for
+    # the producers to finish
+    await asyncio.gather(*producers)
+    print('---- done producing')
+
+    # wait for the remaining tasks to be processed
+    await queue.join()
+
+    # cancel the consumers, which are now idle
+    for c in consumers:
+        c.cancel()
+
+
+asyncio.run(main())
 
 
 if __name__ == '__main__':
-    queue_detail = ''
-    sleep_time = 100
-    worker = index_worker(queue_detail)
     if 'start' in sys.argv:
-        asyncio.run(indexer(worker, sleep_time))
+        asyncio.run(main())
     if 'stop' in sys.argv:
         loop = asyncio.get_event_loop()
         loop.close()
