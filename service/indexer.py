@@ -43,7 +43,7 @@ class index_worker():
 loop = asyncio.get_event_loop()
 
 
-async def indexer_engine(worker, sleep_time):
+async def indexer_engine(worker=None, sleep_time=None):
     """
         Engine of the indexer where tasks ran until complete, includes:
         - worker: queue and its tasks
@@ -53,12 +53,10 @@ async def indexer_engine(worker, sleep_time):
     while True:
         try:
             await asyncio.sleep(sleep_time)
-            tasks = asyncio.ensure_future(worker.get_item())
-            loop.run_until_complete(tasks)  # wait until tasks are done
+            worker.get_item()  # TO DO: don something with results
         except Exception as err:
             # replace with logging system
             print('following error when taking off queue: %s' % (err))
-        loop.close()
 
 
 def fetch_queue():
@@ -78,18 +76,19 @@ async def main():
         - associate queue to index worker
         - assign tasks to the worker
     """
+    # import pdb; pdb.set_trace()
     queue = fetch_queue()
-    sleep_time = 10
+    sleep_time = 1
     worker = index_worker(queue)
     await indexer_engine(worker, sleep_time)
-    print('---- done consuming')
-
-asyncio.run(main())
+    print('---- done consuming----')
 
 
 if __name__ == '__main__':
     if 'start' in sys.argv:
+        print('start indexer service')
         asyncio.run(main())
-    if 'stop' in sys.argv:
+    elif 'stop' in sys.argv:
+        print('stop indexer service')
         loop = asyncio.get_event_loop()
         loop.close()
