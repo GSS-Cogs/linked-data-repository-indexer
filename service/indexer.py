@@ -2,7 +2,7 @@ import sys
 import asyncio
 
 
-class index_worker():
+class index_worker:
     """
         Index worker for queue(TBA), including:
         - put items on queue
@@ -24,7 +24,7 @@ class index_worker():
         """
         Get item from queue
         """
-        return self.queue.get()
+        return self.queue.pop()
 
     def fetch_index(self, index: int):
         """
@@ -46,8 +46,8 @@ async def indexer_engine(worker=None, sleep_time=None):
         - worker: queue and its tasks
         - sleep_time: amount to wait for an asyncio task
     """
-    # TO DO: take items of queue to chosen queue
     while True:
+        results = []
         try:
             await asyncio.sleep(sleep_time)
             worker.get_item()  # TO DO: don something with results
@@ -74,7 +74,6 @@ async def main():
         - associate queue to index worker
         - assign tasks to the worker
     """
-    # import pdb; pdb.set_trace()
     queue = fetch_queue()
     sleep_time = 1
     worker = index_worker(queue)
@@ -83,6 +82,9 @@ async def main():
 
 
 if __name__ == '__main__':
+    """
+        'start' and 'stop' capability for the indexer
+    """
     if 'start' in sys.argv:
         print('start indexer service')
         asyncio.run(main())
