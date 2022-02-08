@@ -54,6 +54,7 @@ async def indexer_engine(worker=None, sleep_time=None):
         except Exception as err:
             # replace with logging system
             print('following error when taking off queue: %s' % (err))
+            return
 
 
 def fetch_queue():
