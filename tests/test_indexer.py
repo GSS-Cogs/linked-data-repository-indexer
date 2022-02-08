@@ -38,7 +38,6 @@ class TestIndexer:
         fetch_queue_item = dummy_index_worker.get_item()
         assert(fetch_queue_item, 'test_item')
 
-
     def test_get_index_queue_item(self):
         """
         Get positional item from queue
@@ -50,4 +49,9 @@ class TestIndexer:
         assert(fetch_queue_item, 1)
 
 
+class Test(IsolatedAsyncioTestCase):
 
+    async def test_functionality(self):
+        async_worker = await indexer.main()
+        # lets test it runs and doesnt return anything
+        self.assertEquals(async_worker, None)
