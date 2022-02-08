@@ -40,9 +40,6 @@ class index_worker():
         return self.queue.drain()
 
 
-loop = asyncio.get_event_loop()
-
-
 async def indexer_engine(worker=None, sleep_time=None):
     """
         Engine of the indexer where tasks ran until complete, includes:
