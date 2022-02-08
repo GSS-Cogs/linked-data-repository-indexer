@@ -52,8 +52,18 @@ async def indexer_engine(worker, sleep_time):
         loop.close()
 
 
-async def main(queue):
+def fetch_queue():
+    """
+        Fetch queue to be used
+        TBA production queue details
+    """
+    # queue = 'prod_queue_details'
+    queue = list(range(10))
+    return queue
 
+
+async def main():
+    queue = fetch_queue()
     sleep_time = 10
     worker = index_worker(queue)
     await indexer_engine(worker, sleep_time)
@@ -63,10 +73,8 @@ asyncio.run(main())
 
 
 if __name__ == '__main__':
-    # fetch_queue = '<prod_queue>'
-    fetch_queue = list(range(10))
     if 'start' in sys.argv:
-        asyncio.run(main(fetch_queue))
+        asyncio.run(main())
     if 'stop' in sys.argv:
         loop = asyncio.get_event_loop()
         loop.close()
