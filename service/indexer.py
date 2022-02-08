@@ -4,7 +4,11 @@ import asyncio
 
 class index_worker():
     """
-        Index worker for queue(TBA) can put/get item on queue
+        Index worker for queue(TBA), including:
+        - put items on queue
+        - get items on queue
+        - drain items on queue
+        - get positional items of queue
     """
 
     def __init__(self, queue):
@@ -40,6 +44,11 @@ loop = asyncio.get_event_loop()
 
 
 async def indexer_engine(worker, sleep_time):
+    """
+        Engine of the indexer where tasks ran until complete, includes:
+        - worker: queue and its tasks
+        - sleep_time: amount to wait for an asyncio task
+    """
     # TO DO: take items of queue to chosen queue
     while True:
         try:
@@ -63,6 +72,12 @@ def fetch_queue():
 
 
 async def main():
+    """
+        Running the asyncio tasks, include:
+        - fetch queue
+        - associate queue to index worker
+        - assign tasks to the worker
+    """
     queue = fetch_queue()
     sleep_time = 10
     worker = index_worker(queue)
