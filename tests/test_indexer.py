@@ -1,5 +1,7 @@
 import pytest
-from mock import Mock
+import asyncio
+from unittest import IsolatedAsyncioTestCase
+from mock import Mock, patch
 from service import indexer
 
 
@@ -15,12 +17,12 @@ class TestIndexer:
         """
         Indexer is callable
         """
-        dummy_indexer = indexer.indexer
+        dummy_indexer = indexer.indexer_engine
         assert(callable(dummy_indexer))
 
     def test_index_worker(self):
         """
-        Idex worker is callable
+        Index worker is callable
         """
 
         dummy_index_worker = indexer.index_worker
@@ -35,3 +37,17 @@ class TestIndexer:
         dummy_index_worker = indexer.index_worker(dummy_queue)
         fetch_queue_item = dummy_index_worker.get_item()
         assert(fetch_queue_item, 'test_item')
+
+
+    def test_get_index_queue_item(self):
+        """
+        Get positional item from queue
+        """
+
+        dummy_queue = list(range(10))
+        dummy_index_worker = indexer.index_worker(dummy_queue)
+        fetch_queue_item = dummy_index_worker.fetch_index(1)
+        assert(fetch_queue_item, 1)
+
+
+
