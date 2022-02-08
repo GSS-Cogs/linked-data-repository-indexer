@@ -49,9 +49,12 @@ class TestIndexer:
         assert(fetch_queue_item, 1)
 
 
-class Test(IsolatedAsyncioTestCase):
+class TestAsyncMain(IsolatedAsyncioTestCase):
 
-    async def test_functionality(self):
+    async def test_async_main(self):
+        """
+
+        """
         async_worker = await indexer.main()
         # lets test it runs and doesnt return anything
         self.assertEquals(async_worker, None)
