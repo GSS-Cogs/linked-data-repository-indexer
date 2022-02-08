@@ -44,7 +44,7 @@ async def indexer_engine(worker, sleep_time):
     while True:
         try:
             await asyncio.sleep(sleep_time)
-            tasks = asyncio.ensure_future(worker)
+            tasks = asyncio.ensure_future(worker.get_item())
             loop.run_until_complete(tasks)  # wait until tasks are done
         except Exception as err:
             # replace with logging system
@@ -52,35 +52,21 @@ async def indexer_engine(worker, sleep_time):
         loop.close()
 
 
-async def main():
-    queue = asyncio.Queue()  # replace with production queue
+async def main(queue):
+
     sleep_time = 10
     worker = index_worker(queue)
-
-    # producers = [asyncio.create_task(producer(queue))
-    #              for _ in range(3)] # example of producers on queue
-    consumers = [asyncio.create_task(indexer_engine(worker, sleep_time))
-                 for _ in range(10)]
-
-    # with both producers and consumers running, wait for
-    # the producers to finish
-    # await asyncio.gather(*producers)
-    print('---- done producing')
-
-    # wait for the remaining tasks to be processed
-    await queue.join()
-
-    # cancel the consumers, which are now idle
-    for c in consumers:
-        c.cancel()
-
+    await indexer_engine(worker, sleep_time)
+    print('---- done consuming')
 
 asyncio.run(main())
 
 
 if __name__ == '__main__':
+    # fetch_queue = '<prod_queue>'
+    fetch_queue = list(range(10))
     if 'start' in sys.argv:
-        asyncio.run(main())
+        asyncio.run(main(fetch_queue))
     if 'stop' in sys.argv:
         loop = asyncio.get_event_loop()
         loop.close()
