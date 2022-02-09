@@ -1,5 +1,6 @@
 import sys
 import asyncio
+from schema import validate_schema
 
 
 class index_worker:
@@ -20,11 +21,13 @@ class index_worker:
         """
         return self.queue.put(item)
 
-    def get_item(self):
+    def get_message(self):
         """
-        Get item from queue
+        Get one item from queue
         """
-        return self.queue.pop()
+        queue_item = self.queue.pop()
+        if validate_schema(queue_item):
+            return queue_item
 
     def fetch_index(self, index: int):
         """
@@ -39,6 +42,15 @@ class index_worker:
 
         return self.queue.drain()
 
+    def message_recieved(self, item):
+        """
+
+        """
+        # check is one message recieved
+        if item:
+            return True
+
+
 
 async def indexer_engine(worker=None, sleep_time=None):
     """
@@ -47,10 +59,14 @@ async def indexer_engine(worker=None, sleep_time=None):
         - sleep_time: amount to wait for an asyncio task
     """
     while True:
-        results = []
         try:
             await asyncio.sleep(sleep_time)
-            worker.get_item()  # TO DO: don something with results
+            queue_item = worker.get_message()
+            if queue_item:
+                    # Confirm one item recieved
+                    confirm_item_reciept = worker.message_recieved(queue_item)
+                    if confirm_item_reciept:
+                        print(queue_item)# do something with the result
         except Exception as err:
             # replace with logging system
             print('following error when taking off queue: %s' % (err))
@@ -62,7 +78,7 @@ def fetch_queue():
         Fetch queue to be used
         TBA production queue details
     """
-    # queue = 'prod_queue_details'
+    # queue = 'prod_queue_details' TO DO: consume production queue
     queue = list(range(10))
     return queue
 
