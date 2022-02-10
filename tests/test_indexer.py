@@ -1,7 +1,5 @@
-import pytest
-import asyncio
+import json
 from unittest import IsolatedAsyncioTestCase
-from mock import Mock, patch
 from service import indexer
 
 
@@ -28,15 +26,17 @@ class TestIndexer:
         dummy_index_worker = indexer.index_worker
         assert(callable(dummy_index_worker))
 
-    def test_get_item_queue(self):
+    def test_get_message_queue(self):
         """
             Get last item from queue
+
         """
-        dummy_queue = Mock()
-        dummy_queue.return_value = 'test_item'
+        dummy_queue = [json.dumps({'item_one': 'test',
+                                    'item_two': 10})]
         dummy_index_worker = indexer.index_worker(dummy_queue)
-        fetch_queue_item = dummy_index_worker.get_item()
-        assert(fetch_queue_item, 'test_item')
+        fetch_queue_item = dummy_index_worker.get_message()
+        assert(fetch_queue_item, {'item_one': 'test',
+                                    'item_two': 10})
 
     def test_get_index_queue_item(self):
         """
