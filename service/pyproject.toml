@@ -8,7 +8,9 @@ authors = ["thomasmastersmethods <tom.masters@gsscogs.uk>"]
 python = "^3.8"
 jsonschema = "^4.4.0"
 
+
 [tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
