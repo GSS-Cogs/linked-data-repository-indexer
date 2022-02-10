@@ -1,6 +1,6 @@
 import sys
 import asyncio
-from schema import validate_schema
+from .schema import validate_schema
 
 
 class index_worker:
