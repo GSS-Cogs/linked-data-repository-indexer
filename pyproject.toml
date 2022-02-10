@@ -1,16 +1,17 @@
 [tool.poetry]
-name = "pytest"
+name = "linked-data-repository-indexer"
 version = "0.1.0"
 description = ""
 authors = ["thomasmastersmethods <tom.masters@gsscogs.uk>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+requests = "^2.27.1"
 jsonschema = "^4.4.0"
 asyncio = "3.4.3"
 
 [tool.poetry.dev-dependencies]
-#pytest = "^6.2.5"
+pytest = "^7.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
