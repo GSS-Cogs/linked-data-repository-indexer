@@ -9,8 +9,5 @@ RUN poetry install
 WORKDIR /service
 COPY /service .
 
-# Ports etc
-EXPOSE 3000
-
 # Use the poetry venv to run the api
 ENTRYPOINT ["poetry", "run", "python3", "-m" , "indexer", "start"]

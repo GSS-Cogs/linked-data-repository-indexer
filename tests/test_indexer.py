@@ -1,6 +1,6 @@
 import json
-from unittest import IsolatedAsyncioTestCase
 from service import indexer
+
 
 
 class TestIndexer:
@@ -23,7 +23,7 @@ class TestIndexer:
         Index worker is callable
         """
 
-        dummy_index_worker = indexer.index_worker
+        dummy_index_worker = indexer.IndexWorker
         assert(callable(dummy_index_worker))
 
     def test_get_message_queue(self):
@@ -33,7 +33,7 @@ class TestIndexer:
         """
         dummy_queue = [json.dumps({'item_one': 'test',
                                     'item_two': 10})]
-        dummy_index_worker = indexer.index_worker(dummy_queue)
+        dummy_index_worker = indexer.IndexWorker(dummy_queue)
         fetch_queue_item = dummy_index_worker.get_message()
         assert(fetch_queue_item, {'item_one': 'test',
                                     'item_two': 10})
@@ -44,17 +44,17 @@ class TestIndexer:
         """
 
         dummy_queue = list(range(10))
-        dummy_index_worker = indexer.index_worker(dummy_queue)
+        dummy_index_worker = indexer.IndexWorker(dummy_queue)
         fetch_queue_item = dummy_index_worker.fetch_index(1)
         assert(fetch_queue_item, 1)
 
 
-class TestAsyncMain(IsolatedAsyncioTestCase):
+class TestAsyncMain():
 
-    async def test_async_main(self):
+    def test_async_main(self):
         """
+            Async Indexer main is callable
 
         """
-        async_worker = await indexer.main()
-        # lets test it runs and doesnt return anything
-        self.assertEquals(async_worker, None)
+        # lets test it if async indexer is callable
+        assert (callable(indexer.main))

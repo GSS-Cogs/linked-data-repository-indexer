@@ -1,9 +1,10 @@
 import sys
 import asyncio
-from .schema import validate_schema
+from schema import validate_schema
+from utils.configuration.main import config
 
 
-class index_worker:
+class IndexWorker:
     """
         Index worker for queue(TBA), including:
         - put items on queue
@@ -25,6 +26,7 @@ class index_worker:
         """
         Get one item from queue
         """
+
         queue_item = self.queue.pop()
         if validate_schema(queue_item):
             return queue_item
@@ -51,8 +53,7 @@ class index_worker:
             return True
 
 
-
-async def indexer_engine(worker=None, sleep_time=None):
+async def indexer_engine(worker=None, sleep_time=None, config=None):
     """
         Engine of the indexer where tasks ran until complete, includes:
         - worker: queue and its tasks
@@ -63,14 +64,14 @@ async def indexer_engine(worker=None, sleep_time=None):
             await asyncio.sleep(sleep_time)
             queue_item = worker.get_message()
             if queue_item:
-                    # Confirm one item recieved
-                    confirm_item_reciept = worker.message_recieved(queue_item)
-                    if confirm_item_reciept:
-                        print(queue_item)# do something with the result
+                # Confirm one item recieved
+                confirm_item_reciept = True if config['Default'].get(
+                    'mark_message_recieved') and queue_item else False
+                if confirm_item_reciept:
+                    print(queue_item)  # do something with the result
         except Exception as err:
             # replace with logging system
             print('following error when taking off queue: %s' % (err))
-            return
 
 
 def fetch_queue():
@@ -83,28 +84,29 @@ def fetch_queue():
     return queue
 
 
-async def main():
+async def main(config=None):
     """
         Running the asyncio tasks, include:
         - fetch queue
         - associate queue to index worker
         - assign tasks to the worker
     """
+    # TODO: inject the config parameters, TBC
     queue = fetch_queue()
     sleep_time = 1
-    worker = index_worker(queue)
-    await indexer_engine(worker, sleep_time)
-    print('---- done consuming----')
+    worker = IndexWorker(queue)
+    await indexer_engine(worker, sleep_time, config)
 
 
 if __name__ == '__main__':
     """
-        'start' and 'stop' capability for the indexer
+        'start' capability for the indexer
     """
+
     if 'start' in sys.argv:
+        get_config = config
         print('start indexer service')
-        asyncio.run(main())
-    elif 'stop' in sys.argv:
-        print('stop indexer service')
-        loop = asyncio.get_event_loop()
-        loop.close()
+        asyncio.run(main(get_config))
+    else:
+        raise ValueError(
+            'You need to provide start for the service')
