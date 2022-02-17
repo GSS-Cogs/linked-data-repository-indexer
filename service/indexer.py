@@ -2,6 +2,8 @@ import sys
 import asyncio
 from schema import validate_schema
 from utils.configuration.main import config
+from utils.configuration.log import logger
+
 
 
 class IndexWorker:
@@ -26,7 +28,7 @@ class IndexWorker:
         """
         Get one item from queue
         """
-
+        logger.info('getting message from queue')
         queue_item = self.queue.pop()
         if validate_schema(queue_item):
             return queue_item
@@ -68,10 +70,9 @@ async def indexer_engine(worker=None, sleep_time=None, config=None):
                 confirm_item_reciept = True if config['Default'].get(
                     'mark_message_recieved') and queue_item else False
                 if confirm_item_reciept:
-                    print(queue_item)  # do something with the result
+                    logger.info(queue_item)  # do something with the result
         except Exception as err:
-            # replace with logging system
-            print('following error when taking off queue: %s' % (err))
+            logger.error('following error when taking off queue: %s' % (err))
 
 
 def fetch_queue():
@@ -105,7 +106,7 @@ if __name__ == '__main__':
 
     if 'start' in sys.argv:
         get_config = config
-        print('start indexer service')
+        logger.info('start indexer service')
         asyncio.run(main(get_config))
     else:
         raise ValueError(
